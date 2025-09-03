@@ -1,124 +1,426 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baki Inspired Fitness</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #eee;
-      display: flex;
-    }
-    nav {
-      width: 220px;
-      background: #1a1a1a;
-      height: 100vh;
-      padding: 20px;
-      position: fixed;
-    }
-    nav h2 {
-      color: #e50914;
-      text-align: center;
-    }
-    nav ul {
-      list-style: none;
-      padding: 0;
-    }
-    nav ul li {
-      margin: 15px 0;
-    }
-    nav ul li a {
-      text-decoration: none;
-      color: #eee;
-      font-weight: bold;
-    }
-    nav ul li a:hover {
-      color: #e50914;
-    }
-    main {
-      margin-left: 240px;
-      padding: 20px;
-      flex: 1;
-    }
-    section {
-      margin-bottom: 40px;
-    }
-    h1, h3 {
-      color: #e50914;
-    }
-    iframe {
-      width: 100%;
-      height: 315px;
-      border: none;
-      margin-top: 10px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Baki Inspired Fitness – Manish</title>
+<meta name="theme-color" content="#0b0b0b" />
+<style>
+  :root{
+    --bg:#0b0b0b; --panel:#141414; --text:#e9e9e9; --muted:#b7b7b7;
+    --accent:#e50914; --accent2:#b40610; --ok:#18c964;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: Inter,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
+    background:radial-gradient(1200px 1200px at -10% -10%, #1a1a1a 0%, #0b0b0b 50%, #000 100%);
+    display:flex
+  }
+  /* Sidebar */
+  .side{
+    position:sticky; top:0; height:100vh; width:260px; min-width:240px;
+    background:linear-gradient(180deg,#111 0%, #0c0c0c 100%);
+    border-right:1px solid #1f1f1f; padding:24px 18px; overflow:auto;
+  }
+  .brand{font-size:28px; font-weight:800; letter-spacing:.5px; color:var(--accent); margin-bottom:12px}
+  .tag{font-size:12px; color:var(--muted); margin-bottom:22px}
+  .nav a{
+    display:block; padding:12px 14px; margin:6px 0; border-radius:10px; text-decoration:none;
+    color:var(--text); font-weight:600; background:#121212; border:1px solid #1a1a1a;
+    transition:.15s transform,.15s background;
+  }
+  .nav a:hover{transform:translateX(4px); background:#151515}
+  .nav a.active{outline:2px solid var(--accent); background:#131010}
+  .badge{display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; background:#151515; border:1px solid #242424; color:var(--muted)}
+
+  /* Main */
+  main{flex:1; min-width:0; padding:28px 22px 120px}
+  section{background:linear-gradient(180deg,#121212,#0f0f0f); border:1px solid #1d1d1d; border-radius:16px; padding:22px; margin-bottom:18px}
+  h1{margin:0 0 14px; color:var(--accent); font-size:26px}
+  h2{margin:18px 0 8px; color:#ff4a57; font-size:20px}
+  h3{margin:18px 0 8px; color:#ff3a46; font-size:18px}
+  p,li{line-height:1.6}
+  .grid{display:grid; gap:14px}
+  .two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi{display:flex; gap:12px; flex-wrap:wrap}
+  .pill{padding:8px 12px; border:1px solid #242424; border-radius:999px; background:#141414; color:#cfcfcf; font-size:13px}
+  ul.clean{margin:6px 0 14px 18px}
+  .small{font-size:13px; color:var(--muted)}
+  .card{padding:14px; border:1px solid #242424; border-radius:12px; background:#121212}
+  .card h4{margin:0 0 8px; color:#ff616b}
+  .day{border-left:3px solid #2a2a2a; padding-left:12px}
+  details.styled{border:1px solid #232323; border-radius:12px; background:#101010; padding:10px 12px}
+  details.styled[open]{outline:1px solid #2a2a2a}
+  details.styled summary{cursor:pointer; font-weight:700; color:#ff616b}
+  iframe.yt{width:100%; aspect-ratio:16/9; border:0; border-radius:12px; background:#000}
+
+  /* Music bar (sticky bottom) */
+  .musicbar{
+    position:fixed; left:260px; right:0; bottom:0; z-index:50;
+    background:#0e0e0e; border-top:1px solid #1f1f1f; padding:10px 14px; display:flex; gap:12px; align-items:center;
+  }
+  .musicbar .dot{width:10px; height:10px; border-radius:50%; background:#444}
+  .musicbar.playing .dot{background:var(--ok); box-shadow:0 0 10px var(--ok)}
+  .btn{background:var(--accent); border:none; color:#fff; padding:10px 14px; border-radius:10px; font-weight:800; cursor:pointer}
+  .btn.secondary{background:#191919; border:1px solid #2a2a2a; color:#ddd}
+  .tracks{font-size:13px; color:#cfcfcf}
+  .tracks b{color:#fff}
+  .warn{font-size:12px; color:#c8c8c8}
+
+  /* Mobile */
+  @media (max-width:980px){
+    .side{position:fixed; transform:translateX(-100%); transition:.2s; z-index:60}
+    .side.open{transform:none}
+    .menuBtn{position:fixed; top:12px; left:12px; z-index:70}
+    .musicbar{left:0}
+    .two,.three{grid-template-columns:1fr}
+    main{padding-top:56px}
+  }
+</style>
 </head>
 <body>
-  <nav>
-    <h2>Baki Fitness</h2>
-    <ul>
-      <li><a href="#diet">Diet Plan</a></li>
-      <li><a href="#workout">Workout Plan</a></li>
-      <li><a href="#music">Music</a></li>
-      <li><a href="#tutorials">Tutorials</a></li>
-    </ul>
+
+<!-- Sidebar -->
+<aside class="side" id="sidebar">
+  <div class="brand">Baki Fitness</div>
+  <div class="tag">Built for Manish • Teen-safe hypertrophy</div>
+  <nav class="nav">
+    <a href="#diet">Diet Plan</a>
+    <a href="#workout">Workout Plan</a>
+    <a href="#music">Music</a>
+    <a href="#tutorials">Tutorials</a>
   </nav>
-  <main>
-    <section id="diet">
-      <h1>Diet Plan</h1>
-      <p><strong>Pre-Workout (4:50am):</strong> EAA + 1 banana/dates</p>
-      <p><strong>Post-Workout (6:30am):</strong> Whey + Creatine + fruit + almonds</p>
-      <p><strong>Breakfast:</strong> Oats + milk + peanut butter + Paneer/Eggs + Multivitamin + Fish oil</p>
-      <p><strong>Lunch:</strong> Roti/Rice + Dal + Sabzi + Paneer/Soya/Chana + Salad</p>
-      <p><strong>Evening Snack:</strong> Peanut butter sandwich / Moong sprouts</p>
-      <p><strong>Dinner:</strong> Roti/Rice + Paneer/Soya/Dal + Salad</p>
-      <p><strong>Before Bed:</strong> Milk + almonds / Paneer</p>
-    </section>
+  <div style="margin-top:18px">
+    <span class="badge">Goal: Lean-Muscular • 16y</span>
+  </div>
+</aside>
 
-    <section id="workout">
-      <h1>Workout Plan</h1>
-      <h3>Monday – Chest + Triceps</h3>
-      <ul>
-        <li>Bench Press 4×6–8</li>
-        <li>Incline Dumbbell Press 3×8–10</li>
-        <li>Pec Deck Fly 3×12–15</li>
-        <li>Dips 3×Failure</li>
-        <li>Triceps Pushdown 3×10–12</li>
-      </ul>
-      <h3>Tuesday – Back + Biceps</h3>
-      <ul>
-        <li>Pull-ups 4×max</li>
-        <li>Lat Pulldown 3×10–12</li>
-        <li>Barbell Row 3×8–10</li>
-        <li>Bicep Curls 3×10–12</li>
-      </ul>
-      <!-- Add the rest of days similar way -->
-    </section>
+<button class="btn menuBtn" onclick="toggleSide()">☰</button>
 
-    <section id="music">
-      <h1>Music Playlist</h1>
-      <audio id="player" controls autoplay loop>
-        <source src="song1.mp3" type="audio/mpeg">
-        <source src="song2.mp3" type="audio/mpeg">
-      </audio>
-      <p>⚠️ Replace song1.mp3, song2.mp3 with your actual mp3 files.</p>
-    </section>
+<main>
+  <!-- Diet -->
+  <section id="diet">
+    <h1>Diet Plan</h1>
+    <div class="kpi">
+      <span class="pill">Protein target: <b>1.6–2 g/kg</b></span>
+      <span class="pill">Water: <b>3–4 L/day</b></span>
+      <span class="pill">Sleep: <b>7–8 hrs</b></span>
+    </div>
+    <div class="grid two" style="margin-top:10px">
+      <div class="card">
+        <h4>Pre-Workout (4:50–5:00 am)</h4>
+        <ul class="clean">
+          <li>EAA – 1 scoop (water)</li>
+          <li>1 banana <span class="small">or</span> 2 dates</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Post-Workout (6:30 am)</h4>
+        <ul class="clean">
+          <li>Whey – 1 scoop + Creatine 3–5 g</li>
+          <li>Fast carbs: banana / papaya / watermelon</li>
+          <li>5 soaked almonds</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Breakfast (7:30–8:00 am)</h4>
+        <ul class="clean">
+          <li>Oats (40–50 g) + milk + 1 tbsp peanut butter</li>
+          <li>Paneer (50–80 g) <span class="small">or</span> 2 boiled eggs</li>
+          <li>Multivitamin + Fish oil</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Lunch (12–1 pm)</h4>
+        <ul class="clean">
+          <li>Roti (2–3) <span class="small">or</span> Rice (150–200 g cooked)</li>
+          <li>Dal + Sabzi</li>
+          <li>Protein: Paneer / Soya / Chana (~30 g protein)</li>
+          <li>Salad</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Evening Snack (4–5 pm)</h4>
+        <ul class="clean">
+          <li>Peanut butter sandwich <span class="small">(2 bread + 1 tbsp)</span></li>
+          <li>or Sprouted moong / Roasted chana</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Dinner (8–9 pm)</h4>
+        <ul class="clean">
+          <li>Roti/Rice + Paneer/Soya/Dal + Sabzi</li>
+          <li>Salad</li>
+        </ul>
+        <h4 style="margin-top:12px">Before Bed (10–10:30 pm)</h4>
+        <ul class="clean">
+          <li>Warm milk (200 ml) + 2 soaked almonds</li>
+          <li class="small">Optional: 50 g paneer (extra protein)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-    <section id="tutorials">
-      <h1>Exercise Tutorials</h1>
-      <h3>Bench Press</h3>
-      <iframe src="https://www.youtube.com/embed/gRVjAtPip0Y"></iframe>
-      <h3>Squat</h3>
-      <iframe src="https://www.youtube.com/embed/YaXPRqUwItQ"></iframe>
-      <h3>Deadlift</h3>
-      <iframe src="https://www.youtube.com/embed/op9kVnSso6Q"></iframe>
-      <h3>Lat Pulldown</h3>
-      <iframe src="https://www.youtube.com/embed/CAwf7n6Luuc"></iframe>
-    </section>
-  </main>
+  <!-- Workout -->
+  <section id="workout">
+    <h1>Workout Plan (Push / Pull / Legs)</h1>
+    <p class="small">Form first. No ego lifting. Compounds 6–10 reps; isolation 10–15 reps; core 15–20 reps.</p>
+
+    <!-- Monday -->
+    <details class="styled" open>
+      <summary>MON – Chest + Triceps</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Push-ups (warm-up) — 3×20–30</li>
+          <li>Flat Bench Press — 4×6–8</li>
+          <li>Incline Dumbbell Press — 3×8–10</li>
+          <li>Pec Deck / Cable Fly — 3×12–15</li>
+          <li>Bar Dips — 3×failure</li>
+          <li>Triceps Pushdown — 3×10–12</li>
+          <li>Overhead Triceps Extension — 3×10–12</li>
+          <li><b>Abs:</b> Hanging Leg Raise — 3×15</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Tuesday -->
+    <details class="styled">
+      <summary>TUE – Back + Biceps</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Pull-ups — 4×max</li>
+          <li>Lat Pulldown — 3×10–12</li>
+          <li>Barbell Row — 3×8–10</li>
+          <li>Seated Cable Row — 3×12</li>
+          <li>Dumbbell Bicep Curl — 3×10–12</li>
+          <li>Hammer Curl — 3×10–12</li>
+          <li>Face Pulls — 3×12–15</li>
+          <li><b>Abs:</b> Plank — 3×60s</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Wednesday -->
+    <details class="styled">
+      <summary>WED – Legs (Quads focus)</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Back Squat — 4×6–8</li>
+          <li>Leg Press — 3×10–12</li>
+          <li>Walking Lunges — 3×12/leg</li>
+          <li>Leg Extension — 3×12–15</li>
+          <li>Standing Calf Raises — 4×15–20</li>
+          <li><b>Abs:</b> Cable Crunch — 3×15</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Thursday -->
+    <details class="styled">
+      <summary>THU – Shoulders + Traps</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Overhead Press (BB/DB) — 4×8–10</li>
+          <li>Dumbbell Lateral Raises — 3×12–15</li>
+          <li>Arnold Press — 3×10–12</li>
+          <li>Rear Delt Fly (machine/DB) — 3×12–15</li>
+          <li>Shrugs — 3×12–15</li>
+          <li><b>Abs:</b> Russian Twists — 3×20</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Friday -->
+    <details class="styled">
+      <summary>FRI – Back + Arms (Strength)</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Deadlift — 4×5–6</li>
+          <li>Chest Supported Row — 3×8–10</li>
+          <li>Wide Grip Pulldown — 3×10–12</li>
+          <li>Rear Delt Fly — 3×12</li>
+          <li>Preacher Curl — 3×10–12</li>
+          <li>Reverse Curl — 3×10–12</li>
+          <li><b>Abs:</b> Hanging Knee Raise — 3×15</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Saturday -->
+    <details class="styled">
+      <summary>SAT – Hamstrings + Glutes</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Romanian Deadlift — 4×8–10</li>
+          <li>Leg Curl (Machine) — 4×10–12</li>
+          <li>Hip Thrusts — 4×10–12</li>
+          <li>Bulgarian Split Squat — 3×12/leg</li>
+          <li>Seated Calf Raises — 4×15–20</li>
+          <li><b>Abs:</b> Plank Variations — 3×30s</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Sunday -->
+    <details class="styled">
+      <summary>SUN – Rest / Active Recovery</summary>
+      <div class="day">
+        <ul class="clean">
+          <li>Walking, stretching, mobility, foam rolling</li>
+          <li>Optional light cardio 20–30 min</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- Music -->
+  <section id="music">
+    <h1>Music (Auto-sequence & Loop)</h1>
+    <p class="small">Upload your MP3s to this repo as <code>track1.mp3</code> … <code>track5.mp3</code> with these names:<br>
+      <b>1)</b> Looser – Dino James, <b>2)</b> Nidarr – Dino James, <b>3)</b> I Guess, <b>4)</b> Cold Hours, <b>5)</b> Wake Me Up.<br>
+      Page tries to autoplay; if blocked, press the red button below once.
+    </p>
+    <div class="card">
+      <button id="musicBtn" class="btn">▶️ Tap to Start Music</button>
+      <button id="muteBtn" class="btn secondary" style="margin-left:8px">Mute</button>
+      <span class="tracks" id="trackLabel" style="margin-left:10px"></span>
+      <div class="warn" style="margin-top:8px">Tip: after you upload MP3s, music will play even with screen off on phone.</div>
+      <audio id="player" preload="auto"></audio>
+    </div>
+  </section>
+
+  <!-- Tutorials -->
+  <section id="tutorials">
+    <h1>Exercise Tutorials (auto playlist by search)</h1>
+    <p class="small">Each tile opens a YouTube **search-playlist** inside the page (safe channels usually appear first). Sound starts muted on mobile; unmute in the player.</p>
+
+    <div class="grid two">
+      <div class="card"><h4>Bench Press</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=barbell%20bench%20press%20proper%20form%20tutorial&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Incline DB Press</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=incline%20dumbbell%20press%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Pec Deck / Cable Fly</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=cable%20chest%20fly%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Dips (Chest/Triceps)</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=parallel%20bar%20dips%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Lat Pulldown</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=lat%20pulldown%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Pull-ups</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=pull%20ups%20form%20tutorial%20scapular%20depression&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Barbell Row</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=barbell%20row%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Seated Cable Row</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=seated%20cable%20row%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Dumbbell Curl</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=dumbbell%20bicep%20curl%20strict%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Hammer Curl</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=hammer%20curl%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Face Pulls</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=face%20pulls%20rear%20delt%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Back Squat</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=back%20squat%20proper%20form%20depth&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Leg Press</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=leg%20press%20foot%20placement%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Walking Lunges</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=walking%20lunges%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Leg Extension</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=leg%20extension%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Standing Calf Raise</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=standing%20calf%20raise%20full%20range&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Overhead Press</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=overhead%20press%20barbell%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Dumbbell Lateral Raise</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=dumbbell%20lateral%20raise%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Arnold Press</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=arnold%20press%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Rear Delt Fly</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=rear%20delt%20fly%20machine%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Shrugs</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=dumbbell%20shrugs%20form%20upper%20traps&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Deadlift</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=conventional%20deadlift%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Chest Supported Row</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=chest%20supported%20row%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Wide Grip Pulldown</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=wide%20grip%20lat%20pulldown%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Preacher Curl</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=preacher%20curl%20strict%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Reverse Curl</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=reverse%20curl%20brachioradialis%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Romanian Deadlift</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=romanian%20deadlift%20hip%20hinge%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Leg Curl (Machine)</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=leg%20curl%20machine%20proper%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Hip Thrust</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=barbell%20hip%20thrust%20glute%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Bulgarian Split Squat</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=bulgarian%20split%20squat%20form&autoplay=0&mute=1&rel=0"></iframe></div>
+
+      <div class="card"><h4>Seated Calf Raise</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=seated%20calf%20raise%20full%20range&autoplay=0&mute=1&rel=0"></iframe></div>
+      <div class="card"><h4>Core: Plank / Cable Crunch / Hanging Raises</h4><iframe class="yt" src="https://www.youtube.com/embed?listType=search&list=plank%20proper%20form%20cable%20crunch%20hanging%20leg%20raise&autoplay=0&mute=1&rel=0"></iframe></div>
+    </div>
+  </section>
+</main>
+
+<!-- Sticky music status bar -->
+<div class="musicbar" id="musicbar">
+  <div class="dot"></div>
+  <div id="now">Music: waiting…</div>
+</div>
+
+<script>
+  // Smooth scroll + active link
+  const links=[...document.querySelectorAll('.nav a')];
+  links.forEach(a=>{
+    a.addEventListener('click',(e)=>{
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+  const setActive=()=>{
+    const y=window.scrollY+120;
+    let current='#diet';
+    document.querySelectorAll('main section').forEach(s=>{if(s.offsetTop<=y) current='#'+s.id;});
+    links.forEach(a=>a.classList.toggle('active', a.getAttribute('href')===current));
+  };
+  document.addEventListener('scroll', setActive); setActive();
+
+  // Sidebar toggle (mobile)
+  function toggleSide(){ document.getElementById('sidebar').classList.toggle('open'); }
+
+  /* ===== MUSIC PLAYER (HTML5) =====
+     – Put mp3 files in repo root: track1.mp3 ... track5.mp3
+     – Autoplay attempt; if blocked, button must be pressed once
+  */
+  const files=['track1.mp3','track2.mp3','track3.mp3','track4.mp3','track5.mp3'];
+  const titles=[
+    'Looser – Dino James','Nidarr – Dino James','I Guess','Cold Hours','Wake Me Up'
+  ];
+  const audio=document.getElementById('player');
+  const btn=document.getElementById('musicBtn');
+  const muteBtn=document.getElementById('muteBtn');
+  const label=document.getElementById('trackLabel');
+  const bar=document.getElementById('musicbar');
+  let i=0;
+
+  function load(n){
+    i=(n+files.length)%files.length;
+    audio.src=files[i];
+    label.innerHTML = '<b>Now:</b> '+titles[i]+' <span class="small">( '+(i+1)+'/'+files.length+' )</span>';
+    audio.load();
+  }
+  function play(){ audio.play().then(()=>{ bar.classList.add('playing'); document.getElementById('now').textContent='Music: playing'; }).catch(()=>{}); }
+  function next(){ load(i+1); play(); }
+  function prev(){ load(i-1); play(); }
+
+  // setup
+  load(0);
+  audio.addEventListener('ended', next);
+
+  // Try autoplay silently on load (may be blocked by browser)
+  window.addEventListener('load', ()=>{
+    play();
+  });
+
+  // Controls
+  btn.addEventListener('click', ()=>{ play(); });
+  muteBtn.addEventListener('click', ()=>{
+    audio.muted=!audio.muted;
+    muteBtn.textContent = audio.muted ? 'Unmute' : 'Mute';
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e)=>{
+    if(e.code==='Space'){ e.preventDefault(); if(audio.paused) play(); else audio.pause();}
+    if(e.code==='ArrowRight') next();
+    if(e.code==='ArrowLeft') prev();
+  });
+</script>
 </body>
 </html>
